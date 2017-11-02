@@ -53,6 +53,10 @@ while true:
     var contentType = "Content-Type: "
     if filePath.endsWith(".html"):
       responseHeaders.add(contentType & "text/html")
+    elif filePath.endsWith(".png"):
+      responseHeaders.add(contentType & "image/png")
+    elif filePath.endsWith(".jpg") or filePath.endsWith(".jpeg"):
+      responseHeaders.add(contentType & "image/jpeg")
     else:
       responseHeaders.add(contentType & "application/octet-stream")
 

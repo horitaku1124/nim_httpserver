@@ -1,3 +1,3 @@
-export function getUsefulContents(url, callback) {
-  getJSON(url, data => callback(JSON.parse(data)));
+export function outerLogic() {
+    console.error("not implemented");
 }

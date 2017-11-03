@@ -30,7 +30,9 @@ while true:
 
     requestLines.add(lineBuff)
     echo "[", lineBuff, "]"
-  
+
+  if requestLines.len() == 0:
+    continue
 
   var protocols = split(requestLines[0], " ")
   var method1 = protocols[0]
@@ -52,7 +54,9 @@ while true:
     responseHeaders.add("Content-Length: " & responseBody.len().intToStr())
     var contentType = "Content-Type: "
     if filePath.endsWith(".html"):
-      responseHeaders.add(contentType & "text/html")
+      responseHeaders.add(contentType & "text/html; charset=utf-8")
+    elif filePath.endsWith(".js"):
+      responseHeaders.add(contentType & "application/javascript; charset=UTF-8")
     elif filePath.endsWith(".png"):
       responseHeaders.add(contentType & "image/png")
     elif filePath.endsWith(".jpg") or filePath.endsWith(".jpeg"):
@@ -67,19 +71,17 @@ while true:
 
 
 
-  if method1 == "GET":
-    echo protocols
-    echo "Method:", method1
-    
+  # echo protocols
+  # echo "Method:", method1
+  if method1 == "GET" or method1 == "HEAD":
     for line in responseHeaders:
       client.send(line)
       client.send("\r\n")
-
+  
   client.send("\r\n")
 
-  if responseBody != nil:
+  if responseBody != nil and method1 != "HEAD":
     client.send(responseBody)
-
 
   client.close()
   echo "closed"

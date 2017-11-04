@@ -3,12 +3,17 @@ import strutils
 import streams
 import os
 
+import http
+
+var DefaultEncode = "utf-8"
 var MyPort = 8000
 var MyHost = "127.0.0.1"
 var DocumentRoot = "./public_html"
 var socket = newSocket()
 socket.bindAddr(Port(MyPort), MyHost)
 socket.listen()
+
+
 
 var client = newSocket()
 var address = ""
@@ -52,17 +57,12 @@ while true:
     responseHeaders.add("Connection: close")
     responseHeaders.add("Server: NHS")
     responseHeaders.add("Content-Length: " & responseBody.len().intToStr())
+
+    
     var contentType = "Content-Type: "
-    if filePath.endsWith(".html"):
-      responseHeaders.add(contentType & "text/html; charset=utf-8")
-    elif filePath.endsWith(".js"):
-      responseHeaders.add(contentType & "application/javascript; charset=UTF-8")
-    elif filePath.endsWith(".png"):
-      responseHeaders.add(contentType & "image/png")
-    elif filePath.endsWith(".jpg") or filePath.endsWith(".jpeg"):
-      responseHeaders.add(contentType & "image/jpeg")
-    else:
-      responseHeaders.add(contentType & "application/octet-stream")
+    contentType = contentType & http.decideContentType(filePath, DefaultEncode)
+    echo contentType
+    responseHeaders.add(contentType)
 
   else:
     responseHeaders.add("HTTP 404 Not Found")

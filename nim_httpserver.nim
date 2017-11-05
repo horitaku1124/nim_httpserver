@@ -3,6 +3,8 @@ import strutils
 import streams
 import os
 
+# import zip # nimble install zip -y 
+
 import http
 
 var DefaultEncode = "utf-8"
@@ -46,8 +48,7 @@ while true:
   if path.endsWith("/"):
     path.add("index.html")
 
-  var filePath = DocumentRoot
-  filePath.add(path)
+  var filePath = DocumentRoot & path
   var responseBody:string = nil
   if fileExists(filePath):
     var fs = newFileStream(filePath, fmRead)
@@ -58,10 +59,7 @@ while true:
     responseHeaders.add("Server: NHS")
     responseHeaders.add("Content-Length: " & responseBody.len().intToStr())
 
-    
-    var contentType = "Content-Type: "
-    contentType = contentType & http.decideContentType(filePath, DefaultEncode)
-    echo contentType
+    var contentType = "Content-Type: " & http.decideContentType(filePath, DefaultEncode)
     responseHeaders.add(contentType)
 
   else:

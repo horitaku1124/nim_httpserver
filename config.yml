@@ -1,0 +1,3 @@
+port: 8000
+document_root: "./public_html"
+hostname: "127.0.0.1"

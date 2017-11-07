@@ -3,6 +3,7 @@
 ## Run
 
 ```
+nimble install yaml
 nim c -r server.nim
 ```
 

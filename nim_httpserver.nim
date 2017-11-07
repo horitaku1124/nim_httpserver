@@ -4,13 +4,25 @@ import streams
 import os
 
 # import zip # nimble install zip -y 
+import yaml.serialization, streams
 
 import http
 
+type ServerConfig = object
+  port : int32
+  document_root: string
+  hostname: string
+
+
+var serverConfig1: ServerConfig
+var s = newFileStream("config.yml")
+load(s, serverConfig1)
+s.close()
+
 var DefaultEncode = "utf-8"
-var MyPort = 8000
-var MyHost = "127.0.0.1"
-var DocumentRoot = "./public_html"
+var MyPort = serverConfig1.port
+var MyHost = serverConfig1.hostname
+var DocumentRoot = serverConfig1.document_root
 var socket = newSocket()
 socket.bindAddr(Port(MyPort), MyHost)
 socket.listen()

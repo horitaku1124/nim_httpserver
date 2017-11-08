@@ -2,6 +2,7 @@ import net
 import strutils
 import streams
 import os
+import times
 
 # import zip # nimble install zip -y 
 import yaml.serialization, streams
@@ -19,12 +20,12 @@ var s = newFileStream("config.yml")
 load(s, serverConfig1)
 s.close()
 
-var DefaultEncode = "utf-8"
+const DefaultEncode = "utf-8"
 var MyPort = serverConfig1.port
 var MyHost = serverConfig1.hostname
 var DocumentRoot = serverConfig1.document_root
 var socket = newSocket()
-socket.bindAddr(Port(MyPort), MyHost)
+socket.bindAddr(Port(MyPort))
 socket.listen()
 
 
@@ -56,6 +57,7 @@ while true:
   var protocols = split(requestLines[0], " ")
   var method1 = protocols[0]
   var path = protocols[1]
+  var gmtDate = getTime().getGMTime().format("ddd, dd MMM yyyy HH:mm:ss ")&"GMT"
   echo "Path=", path
   if path.endsWith("/"):
     path.add("index.html")
@@ -66,8 +68,9 @@ while true:
     var fs = newFileStream(filePath, fmRead)
     responseBody = fs.readAll()
 
-    responseHeaders.add("HTTP 200 OK")
+    responseHeaders.add("HTTP/1.1 200 OK")
     responseHeaders.add("Connection: close")
+    responseHeaders.add("Date: " & gmtDate)
     responseHeaders.add("Server: NHS")
     responseHeaders.add("Content-Length: " & responseBody.len().intToStr())
 

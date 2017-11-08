@@ -78,7 +78,7 @@ while true:
     responseHeaders.add(contentType)
 
   else:
-    responseHeaders.add("HTTP 404 Not Found")
+    responseHeaders.add("HTTP/1.1 404 Not Found")
     responseHeaders.add("Server: NHS")
     responseHeaders.add("Connection: close")
 

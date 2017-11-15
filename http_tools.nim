@@ -18,5 +18,14 @@ proc decideContentType(filePath:string, defaultEncode:string):string =
 
 proc timeToGmtString(time: Time): string = return time.getGMTime().format("ddd, dd MMM yyyy HH:mm:ss ") & "GMT"
 
+
+proc resolveRealFilePath(uri:string, document_roor:string) : string =
+  var path = uri
+  if path.endsWith("/"):
+    path.add("index.html")
+    
+  return document_roor & path
+
 export decideContentType
 export timeToGmtString
+export resolveRealFilePath

@@ -52,13 +52,10 @@ while true:
 
   var protocols = split(requestLines[0], " ")
   var method1 = protocols[0]
-  var path = protocols[1]
   var gmtDate = timeToGmtString(getTime())
-  echo "Path=", path
-  if path.endsWith("/"):
-    path.add("index.html")
+  echo "Path=", protocols[1]
 
-  var filePath = DocumentRoot & path
+  var filePath = resolveRealFilePath(protocols[1], DocumentRoot)
   var responseBody:string = nil
   if fileExists(filePath):
     var fs = newFileStream(filePath, fmRead)
@@ -79,8 +76,6 @@ while true:
     responseHeaders.add("Connection: close")
 
 
-
-  # echo protocols
   # echo "Method:", method1
   if method1 == "GET" or method1 == "HEAD":
     for line in responseHeaders:

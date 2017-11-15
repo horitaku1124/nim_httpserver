@@ -7,7 +7,7 @@ import times
 # import zip # nimble install zip -y 
 import yaml.serialization, streams
 
-import http
+import http_tools
 
 type ServerConfig = object
   port : int32
@@ -29,23 +29,19 @@ socket.bindAddr(Port(MyPort))
 socket.listen()
 
 
-
 var client = newSocket()
-var address = ""
-var lineBuff = ""
 echo "Started at http://", MyHost, ":", MyPort, "/"
 while true:
   echo "wait"
+  var address = ""
   socket.acceptAddr(client, address)
 
   var requestLines: seq[string] = @[]
   var responseHeaders: seq[string] = @[]
+  var lineBuff = ""
   while true:
     client.readLine(lineBuff)
-    if lineBuff == "":
-      break
-
-    if lineBuff == "\r\n":
+    if lineBuff == "" or lineBuff == "\r\n":
       break
 
     requestLines.add(lineBuff)
@@ -57,7 +53,7 @@ while true:
   var protocols = split(requestLines[0], " ")
   var method1 = protocols[0]
   var path = protocols[1]
-  var gmtDate = getTime().getGMTime().format("ddd, dd MMM yyyy HH:mm:ss ")&"GMT"
+  var gmtDate = timeToGmtString(getTime())
   echo "Path=", path
   if path.endsWith("/"):
     path.add("index.html")
@@ -74,7 +70,7 @@ while true:
     responseHeaders.add("Server: NHS")
     responseHeaders.add("Content-Length: " & responseBody.len().intToStr())
 
-    var contentType = "Content-Type: " & http.decideContentType(filePath, DefaultEncode)
+    var contentType = "Content-Type: " & http_tools.decideContentType(filePath, DefaultEncode)
     responseHeaders.add(contentType)
 
   else:

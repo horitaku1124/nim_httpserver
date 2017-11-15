@@ -1,4 +1,5 @@
 import strutils
+import times
 
 proc decideContentType(filePath:string, defaultEncode:string):string = 
 
@@ -15,5 +16,7 @@ proc decideContentType(filePath:string, defaultEncode:string):string =
     contentType = "application/octet-stream"
   return contentType
 
+proc timeToGmtString(time: Time): string = return time.getGMTime().format("ddd, dd MMM yyyy HH:mm:ss ") & "GMT"
 
 export decideContentType
+export timeToGmtString

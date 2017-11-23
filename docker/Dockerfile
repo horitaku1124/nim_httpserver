@@ -11,8 +11,8 @@ COPY config.yml /root
 
 WORKDIR /root
 
-RUN nim c nim_httpserver.nim
-RUN nim c nim_httpserver2.nim
-
 RUN mkdir /root/public_html
 COPY ./public_html/index.html /root/public_html
+
+RUN nim c nim_httpserver.nim
+RUN nim c nim_httpserver2.nim

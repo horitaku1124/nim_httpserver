@@ -12,6 +12,6 @@ nim c -r server.nim
 ```
 cd docker
 docker build ../ -f Dockerfile -t nim_httpserver
-docker run -it -p 8100:8000 nim_httpserver /root/nim_httpserver2
+docker run --rm -it -p 8100:8000 nim_httpserver /root/nim_httpserver2
 ```
 open http://localhost:8100/

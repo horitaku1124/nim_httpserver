@@ -7,6 +7,7 @@ import strutils
 import times
 import yaml.serialization, streams
 import tables
+import parseopt2
 
 import http_tools
 
@@ -25,11 +26,18 @@ var s = newFileStream("config.yml")
 load(s, serverConfig1)
 s.close()
 
-const DefaultEncode = "utf-8"
-var MyPort = serverConfig1.port
-var MyHost = serverConfig1.hostname
-var DocumentRoot = serverConfig1.document_root
+let DefaultEncode = "utf-8"
+let MyPort = serverConfig1.port
+let MyHost = serverConfig1.hostname
+let DocumentRoot = serverConfig1.document_root
 echo "Started at http://", MyHost, ":", MyPort, "/"
+
+
+var debugPrintOn = false
+for kind, key, val in getopt():
+  if kind == cmdShortOption and key == "d":
+    debugPrintOn = true
+
 
 # var clients {.threadvar.}: seq[AsyncSocket]
 
@@ -54,24 +62,27 @@ proc processClient(client: AsyncSocket) {.async.} =
 
     if requestLines.len() == 0:
       return
-      # for c in clients:
-      #   await c.send(line & "\c\L")
     
     var protocols = split(requestLines[0], " ")
     var method1 = protocols[0]
     var gmtDate = timeToGmtString(getTime())
-    echo "Path=", protocols[1]
+    if debugPrintOn:
+      echo "Path=", protocols[1]
 
     var headersTable = initTable[string, string]()
     for i in countup(1, requestLines.len() - 1):
       let line2s = requestLines[i].split(": ")
       headersTable[line2s[0]] = line2s[1]
 
-    echo " HEAD -> ", headersTable
+    if debugPrintOn:
+      echo " HEAD -> ", headersTable
+    
     var useKeepAlive = headersTable.contains("Connection") and headersTable["Connection"] == "keep-alive"
 
-    if useKeepAlive:
-      echo "KeepAlive -> ", headersTable["Connection"]
+
+    if debugPrintOn:
+      if useKeepAlive:
+        echo "KeepAlive -> ", headersTable["Connection"]
       
 
     var filePath = resolveRealFilePath(protocols[1], DocumentRoot)
@@ -104,22 +115,30 @@ proc processClient(client: AsyncSocket) {.async.} =
       else:
         responseHeaders.add("Connection: close")
 
-
-    # echo "Method:", method1
     if method1 == "GET" or method1 == "HEAD":
       for line2 in responseHeaders:
         await client.send(line2 & "\r\n")
-        echo line2
+
+        if debugPrintOn:
+          echo line2
     
     await client.send("\r\n")
 
     if responseBody != nil and method1 != "HEAD":
       await client.send(responseBody)
     
-    maxKeepAlive = maxKeepAlive - 1
-    echo "Finished\n\n\n"
+    if useKeepAlive:
+      maxKeepAlive = maxKeepAlive - 1
+    else:
+      client.close()
+      break
 
-  echo "closed"
+    if debugPrintOn:
+      echo "Finished\n\n\n"
+
+
+  if debugPrintOn:
+    echo "closed"
 
 proc serve() {.async.} =
   var server = newAsyncSocket()

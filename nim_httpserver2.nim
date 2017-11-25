@@ -33,10 +33,10 @@ let DocumentRoot = serverConfig1.document_root
 echo "Started at http://", MyHost, ":", MyPort, "/"
 
 
-var debugPrintOn = false
+var debugPrintOn = 0
 for kind, key, val in getopt():
   if kind == cmdShortOption and key == "d":
-    debugPrintOn = true
+    debugPrintOn = parseInt(val)
 
 
 # var clients {.threadvar.}: seq[AsyncSocket]
@@ -66,7 +66,7 @@ proc processClient(client: AsyncSocket) {.async.} =
     var protocols = split(requestLines[0], " ")
     var method1 = protocols[0]
     var gmtDate = timeToGmtString(getTime())
-    if debugPrintOn:
+    if debugPrintOn == 1:
       echo "Path=", protocols[1]
 
     var headersTable = initTable[string, string]()
@@ -74,13 +74,13 @@ proc processClient(client: AsyncSocket) {.async.} =
       let line2s = requestLines[i].split(": ")
       headersTable[line2s[0]] = line2s[1]
 
-    if debugPrintOn:
+    if debugPrintOn == 1:
       echo " HEAD -> ", headersTable
     
     var useKeepAlive = headersTable.contains("Connection") and headersTable["Connection"] == "keep-alive"
 
 
-    if debugPrintOn:
+    if debugPrintOn == 1:
       if useKeepAlive:
         echo "KeepAlive -> ", headersTable["Connection"]
       
@@ -119,7 +119,7 @@ proc processClient(client: AsyncSocket) {.async.} =
       for line2 in responseHeaders:
         await client.send(line2 & "\r\n")
 
-        if debugPrintOn:
+        if debugPrintOn == 1:
           echo line2
     
     await client.send("\r\n")
@@ -133,11 +133,11 @@ proc processClient(client: AsyncSocket) {.async.} =
       client.close()
       break
 
-    if debugPrintOn:
+    if debugPrintOn == 1:
       echo "Finished\n\n\n"
 
 
-  if debugPrintOn:
+  if debugPrintOn == 1:
     echo "closed"
 
 proc serve() {.async.} =

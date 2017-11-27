@@ -10,6 +10,7 @@ import tables
 import parseopt2
 
 import http_tools
+import file_service
 
 #
 # @see https://nim-lang.org/docs/asyncnet.html
@@ -39,7 +40,8 @@ for kind, key, val in getopt():
   if kind == cmdShortOption and key == "d":
     debugPrintOn = parseInt(val)
 
-
+var filelogic = file_service.FileService()
+filelogic.init()
 # var clients {.threadvar.}: seq[AsyncSocket]
 
 proc processClient(client: AsyncSocket) {.async.} =
@@ -89,8 +91,7 @@ proc processClient(client: AsyncSocket) {.async.} =
     var filePath = resolveRealFilePath(protocols[1], DocumentRoot)
     var responseBody:string = nil
     if fileExists(filePath):
-      var fs = newFileStream(filePath, fmRead)
-      responseBody = fs.readAll()
+      responseBody = filelogic.getFile(filePath)
 
       responseHeaders.add("HTTP/1.1 200 OK")
       if useKeepAlive:

@@ -1,7 +1,7 @@
 FROM ubuntu:17.10
 
 RUN apt update -y
-RUN apt install nim -y
+RUN apt install nim gcc g++ -y
 RUN nimble install yaml -y
 
 COPY nim_httpserver.nim /root

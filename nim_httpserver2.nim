@@ -8,6 +8,8 @@ import times
 import yaml.serialization, streams
 import tables
 import parseopt2
+import locks
+import terminal
 
 import http_tools
 import file_service
@@ -43,6 +45,9 @@ for kind, key, val in getopt():
 var filelogic = file_service.FileService()
 filelogic.init()
 # var clients {.threadvar.}: seq[AsyncSocket]
+
+var connectedCount = 0
+var closedCount = 0
 
 proc processClient(client: AsyncSocket) {.async.} =
   var maxKeepAlive = 100
@@ -139,8 +144,10 @@ proc processClient(client: AsyncSocket) {.async.} =
       echo "Finished\n\n\n"
 
 
+  closedCount = closedCount + 1
   if debugPrintOn == PRINT_DEBUG_SHORT:
     echo "closed"
+
 
 proc serve() {.async.} =
   var server = newAsyncSocket()
@@ -150,7 +157,20 @@ proc serve() {.async.} =
   
   while true:
     let client = await server.accept()
+    connectedCount = connectedCount + 1
     asyncCheck processClient(client)
 
+var
+  thr: Thread[tuple[a,b: int]]
+
+proc threadFunc(interval: tuple[a,b: int]) {.thread.} =
+  while true:
+    echo "o-", connectedCount, " c-", closedCount
+
+    cursorUp(stdout, 1)
+    sleep(1000)
+
+createThread(thr, threadFunc, (10, 15))
+# joinThreads(thr)
 asyncCheck serve()
 runForever()

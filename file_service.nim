@@ -13,7 +13,7 @@ method getFile(this: FileService, filePath: string): string {.base.} =
     responseBody = this.filePathCache[filePath]
 
     # if debugPrintOn == PRINT_DEBUG_SHORT:
-    echo "in cache"
+    # echo "in cache"
   else:
     let fs = newFileStream(filePath, fmRead)
     responseBody = fs.readAll()

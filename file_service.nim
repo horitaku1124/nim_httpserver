@@ -8,18 +8,18 @@ method init(this: FileService): void {.base.} =
   this.filePathCache = initTable[string, string]()
 
 method getFile(this: FileService, filePath: string): string {.base.} =
-  var responseBody:string
+  var fileData:string
   if this.filePathCache.contains(filePath):
-    responseBody = this.filePathCache[filePath]
+    fileData = this.filePathCache[filePath]
 
     # if debugPrintOn == PRINT_DEBUG_SHORT:
     # echo "in cache"
   else:
     let fs = newFileStream(filePath, fmRead)
-    responseBody = fs.readAll()
+    fileData = fs.readAll()
     fs.close()
-    this.filePathCache[filePath] = responseBody
-  return responseBody
+    this.filePathCache[filePath] = fileData
+  return fileData
 
 
 export FileService

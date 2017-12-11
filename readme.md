@@ -4,8 +4,8 @@
 
 ```
 nimble install yaml
-nim c nim_httpserver2.nim
-./nim_httpserver2
+nim c nim_httpserver.nim
+./nim_httpserver
 ```
 
 
@@ -13,7 +13,7 @@ nim c nim_httpserver2.nim
 ```
 cd docker
 docker build ../ -f Dockerfile -t nim_httpserver
-docker run --rm -it -p 8100:8000 nim_httpserver /root/nim_httpserver2
+docker run --rm -it -p 8100:8000 nim_httpserver /root/nim_httpserver
 ```
 open http://localhost:8100/
 

@@ -160,17 +160,17 @@ proc serve() {.async.} =
     connectedCount = connectedCount + 1
     asyncCheck processClient(client)
 
-var
-  thr: Thread[tuple[a,b: int]]
+var monitorThread: Thread[tuple[]]
 
-proc threadFunc(interval: tuple[a,b: int]) {.thread.} =
+proc threadFunc(interval: tuple[]) {.thread.} =
   while true:
-    echo "o-", connectedCount, " c-", closedCount
+    var ymdDate = timeToYmdString(getTime())
+    echo ymdDate, " o-", connectedCount, " c-", closedCount
 
     cursorUp(stdout, 1)
     sleep(1000)
 
-createThread(thr, threadFunc, (10, 15))
+createThread(monitorThread, threadFunc, ())
 # joinThreads(thr)
 asyncCheck serve()
 runForever()

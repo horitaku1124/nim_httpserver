@@ -19,6 +19,9 @@ proc decideContentType(filePath:string, defaultEncode:string):string =
 proc timeToGmtString(time: Time): string = return time.getGMTime().format("ddd, dd MMM yyyy HH:mm:ss ") & "GMT"
 
 
+proc timeToYmdString(time: Time): string = return time.getLocalTime().format("yyyy-MM-dd HH:mm:ss")
+
+
 proc resolveRealFilePath(uri:string, document_roor:string) : string =
   var path = uri
   if path.endsWith("/"):
@@ -28,4 +31,5 @@ proc resolveRealFilePath(uri:string, document_roor:string) : string =
 
 export decideContentType
 export timeToGmtString
+export timeToYmdString
 export resolveRealFilePath

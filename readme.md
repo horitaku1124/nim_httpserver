@@ -21,3 +21,11 @@ open http://localhost:8100/
 ## Command Option
 
 - -d 0,1 print debug information
+
+
+
+## Testing HTTP/2
+```
+curl -V | grep nghttp2 # Check whether curl supports HTTP/2
+curl --http2 -v http://127.0.0.1:8000/
+```

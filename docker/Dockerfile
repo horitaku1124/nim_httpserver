@@ -15,5 +15,5 @@ WORKDIR /root
 RUN mkdir /root/public_html
 COPY ./public_html/index.html /root/public_html
 
-RUN nim --threads:on c nim_httpserver.nim
-RUN nim --threads:on c nim_http2server.nim
+RUN nim --threads:on --hints:off c nim_httpserver.nim
+RUN nim --threads:on --hints:off c nim_http2server.nim

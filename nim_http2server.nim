@@ -105,26 +105,12 @@ proc processClient(client: AsyncSocket) {.async.} =
       await client.send("Upgrade: " & headersTable["Upgrade"] & "\r\n")
       await client.send("\r\n")
 
-      var canProcess = true
-      var mustRead = await client.recvLine()
-      if mustRead != "PRI * HTTP/2.0":
-        canProcess = false
-
-      if canProcess:
-        mustRead = await client.recvLine()
-        if mustRead != "\r\n":
-          canProcess = false
-
-      if canProcess:
-        mustRead = await client.recvLine()
-        if mustRead != "SM":
-          canProcess = false
-
-      if canProcess:
-        mustRead = await client.recvLine()
-        if mustRead != "\r\n":
-          canProcess = false
-      
+      var size: int = 24
+      var connectionPreface = await client.recv(size)
+      # echo "size=",size
+      # echo "connectionPreface=",connectionPreface
+      # echo "len=", len(connectionPreface)
+      var canProcess = connectionPreface == "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"
       echo "canProcess=",canProcess
 
       while true:

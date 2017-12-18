@@ -19,6 +19,11 @@ import file_service
 #
 
 
+# RFC7540 Settings
+const HEADERS_FRAME = 0x01
+const SETTINGS_FRAME = 0x04
+const WINDOWUPDATE_FRAME = 0x08
+
 type ServerConfig = object
   port : int32
   document_root: string

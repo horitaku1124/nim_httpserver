@@ -19,3 +19,7 @@ go get github.com/spf13/cobra
 go get github.com/summerwind/h2spec
 go run cmd/h2spec/h2spec.go -p 8000 http2
 ```
+
+### HTTP/2 implementation
+
+[node-http2](https://github.com/molnarg/node-http2)

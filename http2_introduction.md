@@ -24,6 +24,7 @@ go run cmd/h2spec/h2spec.go -p 8000 http2
 
 ### HTTP/2 implementation
 
+Not confirmed [node-http2](https://github.com/molnarg/node-http2)
 
 ### minimum implementation
 [http2 client](https://qiita.com/0xfffffff7/items/0960527dca6de364daeb)
